@@ -1,4 +1,12 @@
+import 'package:app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:app/features/auth/presentation/widgets/auth_button.dart';
+import 'package:app/features/auth/presentation/widgets/auth_input_field.dart';
+import 'package:app/features/auth/presentation/widgets/auth_pasword_field.dart';
+import 'package:app/features/auth/presentation/widgets/login_prompt.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'signup.dart'; // Navigate to sign up screen
 
 class LoginPage extends StatefulWidget {
@@ -27,6 +35,15 @@ class _LoginPageState extends State<LoginPage> {
 
     // For now just log them; later add real auth.
     print('Email: $email - Password: $password');
+  }
+
+  void _onLogin() {
+    BlocProvider.of<AuthBloc>(context).add(
+      LoginEvent(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -78,14 +95,17 @@ class _LoginPageState extends State<LoginPage> {
 
               // EMAIL
               _label("Email Address"),
-              _buildTextInput("you@example.com", Icons.email, _emailController),
-
+              AuthInputField(
+                hint: "you@example.com",
+                icon: Icons.email,
+                controller: _emailController,
+              ),
               const SizedBox(height: 18),
 
               // PASSWORD
               _label("Password"),
-              _passwordField(
-                hint: "Enter your password",
+              AuthPaswordField(
+                hint: "Create a strong password",
                 controller: _passwordController,
                 isVisible: showPassword,
                 onToggle: () => setState(() => showPassword = !showPassword),
@@ -93,11 +113,31 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 22),
 
-              _buildLoginButton(),
+             BlocConsumer<AuthBloc, AuthState>(
+                builder: (context, state){
+                  if(state is AuthLoading){
+                    return Center(child: CircularProgressIndicator(),);
+                  }
+                  return AuthButton(text: "Login", onPressed: _onLogin);
+                },
+                listener: (context, state) {
+                  if (state is AuthSuccess) {
+                    
+                    Navigator.pushNamed(context, '/dashboard');
+                  } else if (state is AuthFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.error)),
+                    );
+                  }
+                },
+              ),
 
               const SizedBox(height: 5),
 
-              _buildRegisterButton(),
+              LoginPrompt(
+                text: "Don't have an account? Create account",
+                onTap: () {},
+              ),
 
               const SizedBox(height: 20),
             ],
@@ -112,108 +152,6 @@ class _LoginPageState extends State<LoginPage> {
     return Text(
       text,
       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-    );
-  }
-
-  // TEXT FIELD
-  Widget _buildTextInput(
-    String hint,
-    IconData icon,
-    TextEditingController controller,
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 230, 230, 230),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // PASSWORD FIELD
-  Widget _passwordField({
-    required String hint,
-    required bool isVisible,
-    required TextEditingController controller,
-    required VoidCallback onToggle,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 230, 230, 230),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          const Icon(Icons.lock, color: Colors.grey),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              obscureText: !isVisible,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(color: Colors.black),
-            ),
-          ),
-          GestureDetector(
-            onTap: onToggle,
-            child: Icon(
-              isVisible ? Icons.visibility : Icons.visibility_off,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Login Button
-  Widget _buildLoginButton() {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.blueAccent,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: ElevatedButton(
-        onPressed: _login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        ),
-        child: const Text(
-          'Login',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 
