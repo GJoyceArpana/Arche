@@ -3,7 +3,7 @@ import 'package:app/features/auth/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
 class AuthRemoteDataSource {
-  final String baseUrl = '';
+  final String baseUrl = 'http://localhost:5000/api';
 
   Future<UserModel> login({required String email, required String password}) async{
     final response = await http.post(
