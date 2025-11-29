@@ -16,7 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late Future<List<LearningJourney>> _journeysFuture;
 
   // ⚠️ Replace with the actual logged-in userId
-  final String _userId = "cmi4kz1610000ijnmm3jun0l9"; 
+  final String _userId = "cmiddkcas00006mjfg5pk7arx"; 
 
   @override
   void initState() {
