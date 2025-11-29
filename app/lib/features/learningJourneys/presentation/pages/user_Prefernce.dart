@@ -41,7 +41,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _userId = "cmikhub6a00bh6mmvazs2emim";
       _token = tok;
     });
-   // print('DEBUG loaded uid=$_userId tok=$_token');
+    // print('DEBUG loaded uid=$_userId tok=$_token');
   }
 
   int currentStep = 1;
@@ -71,37 +71,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       onWillPop: _handleBack,
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF3F0FF), Color(0xFFEFF4FF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
           child: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
               child: Column(
                 children: [
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (currentStep > 1) {
-                            setState(() => currentStep--);
-                          } else {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Icon(
-                          Icons.arrow_back,
-                          size: 26,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 16),
 
                   // Progress Bar
@@ -356,36 +330,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        GestureDetector(
-          onTap: () {
-            if (currentStep > 1) {
+        if (currentStep > 1)
+          GestureDetector(
+            onTap: () {
               setState(() => currentStep--);
-            } else {
-              Navigator.pop(context);
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.arrow_back, size: 18),
+                  SizedBox(width: 6),
+                  Text("Back", style: TextStyle(fontSize: 15)),
+                ],
+              ),
             ),
-            child: const Row(
-              children: [
-                Icon(Icons.arrow_back, size: 18),
-                SizedBox(width: 6),
-                Text("Back", style: TextStyle(fontSize: 15)),
-              ],
-            ),
-          ),
-        ),
+          )
+        else
+          const SizedBox(width: 1),
 
         GestureDetector(
           onTap: () async {
@@ -435,9 +408,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF628BFF), Color(0xFFA66DFF)],
-              ),
+              color: Colors.blueAccent,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(

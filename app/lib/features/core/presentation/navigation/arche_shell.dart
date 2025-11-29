@@ -24,6 +24,8 @@ class _ArcheShellState extends State<ArcheShell> {
         return const DashboardScreen();
       case 1:
         return const CourseListScreen();
+      case 2:
+        return const OnboardingScreen();
       case 3:
         return const SummarizeScreen();
       default:
@@ -39,7 +41,7 @@ class _ArcheShellState extends State<ArcheShell> {
     // Special case: + Button (index = 2)
     // Opens Onboarding and DOES NOT change tab
     // ----------------------------------------
-    if (index == 2) {
+    if (index == 5) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const OnboardingScreen()),
@@ -50,11 +52,14 @@ class _ArcheShellState extends State<ArcheShell> {
     setState(() => _currentIndex = index);
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(elevation: 0, title: const Text('Arche')),
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text('Arche'),
+      ),
 
       body: _buildBody(),
 
