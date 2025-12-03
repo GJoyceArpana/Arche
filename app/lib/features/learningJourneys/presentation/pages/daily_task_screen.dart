@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../data/models/learning_journey_model.dart';
-// import 'package:url_launcher/url_launcher.dart'; // Add this to pubspec.yaml to open links
+import '../../../Dashboard/presentation/pages/dashboard.dart';
 
 class DailyTaskScreen extends StatelessWidget {
-  final SubTopic subTopic; 
+  final SubTopic subTopic;
 
   const DailyTaskScreen({super.key, required this.subTopic});
 
   @override
   Widget build(BuildContext context) {
-    // Basic string parsing to separate "Day 1" from the actual topic description
     final parts = subTopic.description.split(':');
     final String title = parts.isNotEmpty ? parts[0] : "Daily Task";
-    final String subtitle = parts.length > 1 ? parts[1].trim() : subTopic.description;
+    final String subtitle =
+        parts.length > 1 ? parts[1].trim() : subTopic.description;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F0FF),
@@ -20,11 +20,8 @@ class DailyTaskScreen extends StatelessWidget {
         title: Text(title),
         backgroundColor: const Color(0xFF6A5AE0),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
+
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -34,6 +31,7 @@ class DailyTaskScreen extends StatelessWidget {
             "Today's Learning Goals 🔥",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
+
           const SizedBox(height: 8),
 
           Text(
@@ -43,32 +41,38 @@ class DailyTaskScreen extends StatelessWidget {
 
           const SizedBox(height: 25),
 
-          // Dynamic Video List
           if (subTopic.videoResources.isEmpty)
             const Padding(
               padding: EdgeInsets.all(20.0),
               child: Center(child: Text("No videos found for this topic.")),
             )
           else
-            ...subTopic.videoResources.map((video) => _taskCard(
-              icon: Icons.play_circle_fill,
-              title: video.title,
-              subtitle: "${video.duration} mins • Video Lesson",
-              url: video.url,
-              color: const Color(0xFF7A6BFF),
-            )),
+            ...subTopic.videoResources.map(
+              (video) => _taskCard(
+                icon: Icons.play_circle_fill,
+                title: video.title,
+                subtitle: "${video.duration} mins • Video Lesson",
+                url: video.url,
+                color: const Color(0xFF7A6BFF),
+              ),
+            ),
 
           const SizedBox(height: 30),
 
-          // Bottom CTA
+          // ✅ ✅ ✅ MARK COMPLETE → GO TO DASHBOARD (NOT HOME)
           GestureDetector(
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Great job! Day marked as complete."),
+                  content: Text("✅ Great job! Day marked as complete."),
                 ),
               );
-              Navigator.pop(context); // Go back to Roadmap or Dashboard
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                (route) => false,
+              );
             },
             child: Container(
               height: 52,
@@ -91,6 +95,7 @@ class DailyTaskScreen extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(height: 20),
         ],
       ),
@@ -120,8 +125,7 @@ class DailyTaskScreen extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          // TODO: Implement actual URL Launching here
-          debugPrint("Launching URL: $url"); 
+          debugPrint("Launching URL: $url");
         },
         child: Row(
           children: [
@@ -155,7 +159,8 @@ class DailyTaskScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.grey),
           ],
         ),
       ),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../data/repositories/learning_repository.dart';
 import '../../data/models/learning_journey_model.dart';
-import '../../../auth/presentation/bloc/auth_local.dart';
 import '../widgets/Course_card.dart';
 
 class CourseListScreen extends StatefulWidget {
   final String userId = "cmieugm7s0000uye0jzmwhgut";
   final LearningRepository repository;
 
-  const CourseListScreen({super.key, required this.repository});
+  const CourseListScreen({
+    super.key,
+    required this.repository,
+  });
 
   @override
   State<CourseListScreen> createState() => _CourseListScreenState();
@@ -32,13 +34,18 @@ class _CourseListScreenState extends State<CourseListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ongoing Courses')),
+      appBar: AppBar(
+        title: const Text('Ongoing Courses'),
+      ),
       body: FutureBuilder<List<LearningJourney>>(
         future: _journeysFuture,
         builder: (context, snapshot) {
+          /// ✅ LOADING
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+
+          /// ✅ ERROR
           if (snapshot.hasError) {
             return Center(
               child: Padding(
@@ -50,29 +57,35 @@ class _CourseListScreenState extends State<CourseListScreen> {
               ),
             );
           }
+
           final journeys = snapshot.data ?? [];
+
+          /// ✅ EMPTY
           if (journeys.isEmpty) {
             return const Center(child: Text('No ongoing courses.'));
           }
+
           return RefreshIndicator(
             onRefresh: _refresh,
             child: ListView.builder(
               itemCount: journeys.length,
               itemBuilder: (context, index) {
                 final journey = journeys[index];
+
                 return CourseCard(
                   journey: journey,
+
+                  /// ✅ FIXED DETAILS FETCH (NAMED PARAMS)
                   onTap: () async {
-                    // Optionally fetch details on tap using repository route
                     try {
-                      final details = await widget.repository.getJourneyDetails(
-                        widget.userId,
-                        journey.id,
+                      final details =
+                          await widget.repository.getJourneyDetails(
+                        userId: widget.userId,
+                        journeyId: journey.id,
                       );
-                      // Navigate to a detail page if you have one
-                      // Navigator.pushNamed(context, '/journeyDetail', arguments: details);
-                      // For now, show a simple bottom sheet with summary
+
                       if (!mounted) return;
+
                       showModalBottomSheet(
                         context: context,
                         builder: (ctx) {
@@ -84,7 +97,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                               children: [
                                 Text(
                                   details.topicName,
-                                  style: Theme.of(ctx).textTheme.titleLarge,
+                                  style:
+                                      Theme.of(ctx).textTheme.titleLarge,
                                 ),
                                 const SizedBox(height: 8),
                                 Text('Created: ${details.createdAt}'),
@@ -96,7 +110,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
-                                    onPressed: () => Navigator.pop(ctx),
+                                    onPressed: () =>
+                                        Navigator.pop(ctx),
                                     child: const Text('Close'),
                                   ),
                                 ),
@@ -107,8 +122,12 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       );
                     } catch (e) {
                       if (!mounted) return;
+
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error fetching details: $e')),
+                        SnackBar(
+                          content:
+                              Text('Error fetching details: $e'),
+                        ),
                       );
                     }
                   },

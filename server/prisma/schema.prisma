@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma Schema File
+// Docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client"
@@ -36,52 +33,61 @@ model User {
 }
 
 model learningJourney {
-  id        String   @id @default(cuid())
-  topicName String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  subTopics subTopic[]
-  learningPreferences learningPreference[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String                @id @default(cuid())
+  topicName             String
+  userId                String
+  user                  User                  @relation(fields: [userId], references: [id])
+  subTopics             subTopic[]
+  learningPreferences  learningPreference[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
 
   @@index([userId])
 }
 
 model learningPreference {
-  id           String   @id @default(cuid())
-  mainTopicName String
-  skillLevel  skillLevel
-  language  prefferedLanguage
-  hoursPerDay  Int
-  monthsToComplete Int
-  learningJourney learningJourney @relation(fields: [learningJourneyId], references: [id])
-  learningJourneyId String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                   String                @id @default(cuid())
+  mainTopicName        String
+  skillLevel           skillLevel
+  language             prefferedLanguage
+  hoursPerDay          Int
+  monthsToComplete     Int
+
+  learningJourney      learningJourney       @relation(fields: [learningJourneyId], references: [id])
+  learningJourneyId    String
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
   @@index([learningJourneyId])
 }
 
 model subTopic {
-  id          String   @id @default(cuid())
-  description String
-  videoResources   videoResource[]
-  learningJourney learningJourney @relation(fields: [learningJourneyId], references: [id])
-  learningJourneyId String
-  isCompleted Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String                @id @default(cuid())
+  description          String
+
+  learningJourney      learningJourney       @relation(fields: [learningJourneyId], references: [id])
+  learningJourneyId    String
+
+  videoResources       videoResource[]
+
+  isCompleted          Boolean               @default(false)
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
 model videoResource {
-  id          String   @id @default(cuid())
-  title       String
-  url         String
-  duration    Int
-  subTopic    subTopic @relation(fields: [subTopicId], references: [id])
-  subTopicId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String                @id @default(cuid())
+  title                String
+  url                  String
+  duration             Int
+
+  subTopic             subTopic              @relation(fields: [subTopicId], references: [id])
+  subTopicId           String
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   @@index([subTopicId])
 }
