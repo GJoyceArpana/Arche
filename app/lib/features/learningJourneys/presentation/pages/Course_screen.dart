@@ -44,11 +44,11 @@ class _GeneratedRoadmapScreenState extends State<GeneratedRoadmapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final subTopics = _journey.subTopics ?? [];
+    final subTopics = _journey.subTopics;
     final pending = subTopics.where((t) => !t.isCompleted).toList();
     final completed = subTopics.where((t) => t.isCompleted).toList();
     final displayList = [...pending, ...completed];
-    String _extractDayLabel(String description) {
+    String extractDayLabel(String description) {
       // Use the part before the colon, e.g., "Day 1:" from "Day 1: Introduction to linux"
       final idx = description.indexOf(':');
       if (idx > 0) {
@@ -145,7 +145,7 @@ class _GeneratedRoadmapScreenState extends State<GeneratedRoadmapScreen> {
                           ),
 
                           title: Text(
-                            _extractDayLabel(task.description),
+                            extractDayLabel(task.description),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
 

@@ -12,7 +12,7 @@ class CourseVideosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subTopics = journey.subTopics ?? [];
+    final subTopics = journey.subTopics;
 
     final allVideos = subTopics
         .expand((sub) => sub.videoResources)

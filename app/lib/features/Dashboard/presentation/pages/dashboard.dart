@@ -92,12 +92,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 10),
 
                 ...journeys.map((course) {
-                  final int totalTasks = course.subTopics.length ?? 0;
+                  final int totalTasks = course.subTopics.length;
                   final int completedTasks =
                       course.subTopics
                           .where((e) => e.videoResources.isNotEmpty)
-                          .length ??
-                      0;
+                          .length;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
