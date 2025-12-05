@@ -35,10 +35,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _loadCreds() async {
     final tok = await AuthLocal.getToken();
+    final uid = await AuthLocal.getUserId();
     if (!mounted) return;
     setState(() {
-      _userId = "cmieugm7s0000uye0jzmwhgut"; // TEMP USER
-      _token = tok;
+      _userId = uid ?? ''; // read from secure storage
+      _token = tok ?? '';
     });
   }
 
@@ -209,9 +210,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _step6Summary() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text("Ready to generate your roadmap"),
-      ],
+      children: const [Text("Ready to generate your roadmap")],
     );
   }
 
@@ -252,8 +251,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               final repo = LearningRepository(authToken: tok);
 
-              final topicName =
-                  selectedInterests.isNotEmpty ? selectedInterests.first : 'Untitled';
+              final topicName = selectedInterests.isNotEmpty
+                  ? selectedInterests.first
+                  : 'Untitled';
 
               final months = _mapTimePeriodToMonths(timePeriod);
 

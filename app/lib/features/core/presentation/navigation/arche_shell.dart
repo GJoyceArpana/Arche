@@ -29,7 +29,7 @@ class _ArcheShellState extends State<ArcheShell> {
   Future<void> _initRepo() async {
     final token = await AuthLocal.getToken();
     setState(() {
-      _token = token;
+      _token = token ?? '';
       _repo = LearningRepository(authToken: _token);
     });
   }
@@ -38,16 +38,18 @@ class _ArcheShellState extends State<ArcheShell> {
   // MAIN SCREENS (Tabs)
   // -------------------------------
   Widget _buildBody() {
+    if (_repo == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     switch (_currentIndex) {
       case 0:
         return const DashboardScreen();
       case 1:
-        return  CourseListScreen(repository: _repo!);
+        return CourseListScreen(repository: _repo!);
       case 2:
         return const OnboardingScreen();
       case 3:
-        return const NotesScreen()
-;
+        return const NotesScreen();
       default:
         return const DashboardScreen();
     }
