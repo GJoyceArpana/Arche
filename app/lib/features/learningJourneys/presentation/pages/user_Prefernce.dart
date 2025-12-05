@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../auth/presentation/bloc/auth_local.dart';
 import '../../data/repositories/learning_repository.dart';
-import 'generated_roadmap_screen.dart';
+import 'Course_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

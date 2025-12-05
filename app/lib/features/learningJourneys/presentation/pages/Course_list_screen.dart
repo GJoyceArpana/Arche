@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/repositories/learning_repository.dart';
 import '../../data/models/learning_journey_model.dart';
-import 'generated_roadmap_screen.dart';
+import 'Course_screen.dart';
 import '../../../auth/presentation/bloc/auth_local.dart';
 
 class CourseListScreen extends StatefulWidget {
