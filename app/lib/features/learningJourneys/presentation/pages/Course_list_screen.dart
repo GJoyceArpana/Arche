@@ -1,50 +1,55 @@
 import 'package:flutter/material.dart';
 import '../../data/repositories/learning_repository.dart';
 import '../../data/models/learning_journey_model.dart';
-import 'generated_roadmap_screen.dart';
+import 'Course_screen.dart';
+import '../../../auth/presentation/bloc/auth_local.dart';
 
 class CourseListScreen extends StatefulWidget {
   final LearningRepository repository;
 
   // ✅ DO NOT USE const here because repository is runtime injected
-  CourseListScreen({
-    super.key,
-    required this.repository,
-  });
+  const CourseListScreen({super.key, required this.repository});
 
   @override
   State<CourseListScreen> createState() => _CourseListScreenState();
 }
 
 class _CourseListScreenState extends State<CourseListScreen> {
-  // ✅ TEMP USER (replace later with AuthLocal)
-  final String userId = "cmieugm7s0000uye0jzmwhgut";
-
-  late Future<List<LearningJourney>> _journeysFuture;
+  String userId = ''; // initialize to avoid LateInitializationError
+  Future<List<LearningJourney>>? _journeysFuture; // start as null
 
   @override
   void initState() {
     super.initState();
-    _loadCourses();
+    _init(); // only async init
   }
 
-  void _loadCourses() {
-    _journeysFuture = widget.repository.getAllJourneys(userId);
+  Future<void> _init() async {
+    final uid = await AuthLocal.getUserId() ?? '';
+    if (!mounted) return;
+    setState(() {
+      userId = uid;
+      _journeysFuture = widget.repository.getAllJourneys(
+        userId,
+      ); // set future now
+    });
   }
 
   Future<void> _refresh() async {
     setState(() {
-      _loadCourses();
+      _journeysFuture = widget.repository.getAllJourneys(userId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Show loader until future is ready
+    if (_journeysFuture == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ongoing Courses"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Ongoing Courses"), centerTitle: true),
       body: FutureBuilder<List<LearningJourney>>(
         future: _journeysFuture,
         builder: (context, snapshot) {
@@ -83,15 +88,10 @@ class _CourseListScreenState extends State<CourseListScreen> {
                   margin: const EdgeInsets.only(bottom: 12),
                   elevation: 2,
                   child: ListTile(
-                    leading: const Icon(
-                      Icons.school,
-                      color: Colors.deepPurple,
-                    ),
+                    leading: const Icon(Icons.school, color: Colors.deepPurple),
                     title: Text(
                       journey.topicName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
                       "Created on ${journey.createdAt}",
@@ -103,10 +103,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     onTap: () async {
                       try {
                         final detailed = await widget.repository
-                            .getJourneyDetails(
-                          userId,
-                          journey.id,
-                        );
+                            .getJourneyDetails(userId, journey.id);
 
                         if (!mounted) return;
 
@@ -126,9 +123,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       } catch (e) {
                         if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Failed to open course: $e"),
-                          ),
+                          SnackBar(content: Text("Failed to open course: $e")),
                         );
                       }
                     },

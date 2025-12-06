@@ -19,6 +19,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
+      final user = await registerUseCase.call(
+        event.fullname,
+        event.email,
+        event.password,
+      );
+      // Optionally store token if backend returns one
+      if (user.token.isNotEmpty) {
+        await _storage.write(key: 'token', value: user.token);
+      }
+      await _storage.write(key: 'userId', value: user.id);
       emit(AuthSuccess(message: "Registration Successful"));
     } catch (e) {
       print("Registration Error Log: $e");
@@ -32,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await loginUseCase.call(event.email, event.password);
       await _storage.write(key: 'token', value: user.token);
       await _storage.write(key: 'userId', value: user.id);
+      print('UserID: ${user.id}');
       print('token: ${user.token}');
       emit(AuthSuccess(message: "Login Successful"));
     } catch (e) {
