@@ -95,10 +95,6 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Your Notes"),
-      ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddNoteSheet,
         child: const Icon(Icons.add),
