@@ -9,4 +9,6 @@ learningJourneyRouter.get('/', getLearningJourneys);
 
 learningJourneyRouter.put('/update-progress', updateProgress);  
 
+learningJourneyRouter.get('streak')
+
 export default learningJourneyRouter;

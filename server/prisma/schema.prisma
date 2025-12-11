@@ -44,6 +44,8 @@ model learningJourney {
   learningPreferences learningPreference[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+  lastAccessed        DateTime             @default(now())
+  streakCount         Int                  @default(0)
 
   @@index([userId])
 }
