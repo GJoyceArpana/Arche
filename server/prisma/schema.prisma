@@ -31,6 +31,7 @@ model User {
   name          String
   password_hash String
   userJourneys  learningJourney[]
+  fileUploads   fileUpload[]
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 }
@@ -105,4 +106,16 @@ model quiz {
   subTopicId String     @unique
   subTopic   subTopic   @relation(fields: [subTopicId], references: [id])
   questions  question[]
+}
+
+model fileUpload {
+  id        String   @id @default(uuid())
+  originalName  String
+  mimeType String
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  size     Int
+  generatedSummary Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
