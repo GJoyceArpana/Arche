@@ -186,29 +186,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.celebration,
-                              size: 80,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 4),
                             const Text(
-                              "All courses completed! 🎉",
+                              "No courses yet!",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Great job on finishing all your learning journeys!",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white.withOpacity(0.8),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                            ),                            
                           ],
                         ),
                       ),
@@ -364,14 +350,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Icon(
                                     Icons.history,
                                     size: 64,
-                                    color: Colors.grey[400],
+                                    color: Colors.grey[800],
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     'No previous summaries',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.grey[600],
+                                      color: Colors.grey[800],
                                     ),
                                   ),
                                 ],
