@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../domain/repositories/document_repository.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../pages/summary_page.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import '../../../auth/presentation/bloc/auth_local.dart';
 
 class UploadCard extends StatefulWidget {
   final Color brandColor;
@@ -24,6 +26,22 @@ class UploadCard extends StatefulWidget {
 class _UploadCardState extends State<UploadCard> {
   PlatformFile? _pickedFile;
   bool _isUploading = false;
+  String _userId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final userId = await AuthLocal.getUserId();
+    if (mounted && userId != null) {
+      setState(() {
+        _userId = userId;
+      });
+    }
+  }
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -42,43 +60,86 @@ class _UploadCardState extends State<UploadCard> {
   }
 
   Future<void> _uploadAndNavigate() async {
-    if (_pickedFile == null || _pickedFile!.path == null) return;
+    if (_pickedFile == null) return;
 
     setState(() {
       _isUploading = true;
     });
 
     try {
-      final file = File(_pickedFile!.path!);
-      final result = await widget.repository.uploadDocument(
-        file,
+      // Get file data based on platform
+      dynamic fileData;
+      if (kIsWeb) {
+        // For web, use bytes
+        fileData = _pickedFile!.bytes;
+        if (fileData == null) {
+          throw Exception('Failed to read file bytes');
+        }
+      } else {
+        // For mobile/desktop, use File
+        if (_pickedFile!.path == null) {
+          throw Exception('File path is null');
+        }
+        fileData = File(_pickedFile!.path!);
+      }
+
+      final uploadResult = await widget.repository.uploadDocument(
+        fileData,
         _pickedFile!.name,
+        _userId,
       );
 
-      if (mounted) {
+      if (!mounted) return;
+
+      if (uploadResult.success && uploadResult.fileId != null) {
+        // Generate summary
+        try {
+          final summary = await widget.repository.generateSummary(
+            uploadResult.fileId!,
+            _userId,
+          );
+
+          if (mounted) {
+            setState(() {
+              _isUploading = false;
+            });
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SummaryPage(
+                  fileName: _pickedFile!.name,
+                  fileId: uploadResult.fileId!,
+                  summary: summary,
+                  chatRepository: widget.chatRepository,
+                  userId: _userId,
+                ),
+              ),
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _isUploading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to generate summary: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
         setState(() {
           _isUploading = false;
         });
-
-        if (!result.success) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SummaryPage(
-                fileName: _pickedFile!.name,
-                documentId: result.documentId ?? '',
-                chatRepository: widget.chatRepository,
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Upload failed'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(uploadResult.error ?? 'Upload failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../../domain/entities/document.dart';
 import '../../domain/entities/upload_result.dart';
 import '../../domain/repositories/document_repository.dart';
@@ -10,15 +9,26 @@ class DocumentRepositoryImpl implements DocumentRepository {
   DocumentRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<UploadResult> uploadDocument(File file, String fileName) async {
+  Future<UploadResult> uploadDocument(
+    dynamic file,
+    String fileName,
+    String userId,
+  ) async {
     try {
-      final result = await remoteDataSource.uploadDocument(file, fileName);
+      final result = await remoteDataSource.uploadDocument(
+        file,
+        fileName,
+        userId,
+      );
 
       return UploadResult(
         success: true,
-        documentId: result['id'] as String?,
-        message:
-            result['message'] as String? ?? 'Document uploaded successfully',
+        fileId: result['id'] as String?,
+        fileName: result['fileName'] as String?,
+        mimeType: result['mimeType'] as String?,
+        size: result['size'] as int?,
+        status: result['status'] as String?,
+        message: 'Document uploaded successfully',
       );
     } catch (e) {
       return UploadResult(success: false, error: e.toString());
@@ -26,18 +36,31 @@ class DocumentRepositoryImpl implements DocumentRepository {
   }
 
   @override
-  Future<Document?> getDocument(String documentId) async {
+  /// Generates a summary for the uploaded document
+  /// Returns markdown-formatted text from the AI summarizer agent
+  Future<String> generateSummary(String fileId, String userId) async {
     try {
-      return await remoteDataSource.getDocument(documentId);
+      return await remoteDataSource.generateSummary(fileId, userId);
     } catch (e) {
-      return null;
+      throw Exception('Failed to generate summary: $e');
     }
   }
 
   @override
-  Future<List<Document>> getDocumentHistory() async {
+  /// Retrieves a previously generated summary
+  /// Returns markdown-formatted text
+  Future<String> getSummary(String fileId, String userId) async {
     try {
-      return await remoteDataSource.getDocumentHistory();
+      return await remoteDataSource.getSummary(fileId, userId);
+    } catch (e) {
+      throw Exception('Failed to get summary: $e');
+    }
+  }
+
+  @override
+  Future<List<Document>> getDocumentHistory(String userId) async {
+    try {
+      return await remoteDataSource.getDocumentHistory(userId);
     } catch (e) {
       return [];
     }

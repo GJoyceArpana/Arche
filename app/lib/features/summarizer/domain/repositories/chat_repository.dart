@@ -1,5 +1,8 @@
 abstract class ChatRepository {
-  Stream<Map<String, dynamic>> connectToChat(String documentId);
-  void sendMessage(String message);
-  void disconnect();
+  /// Sends a follow-up question and receives markdown-formatted answer
+  Future<String> sendFollowUpQuestion(
+    String fileId,
+    String userId,
+    String question,
+  );
 }

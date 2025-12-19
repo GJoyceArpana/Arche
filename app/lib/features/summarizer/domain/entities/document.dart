@@ -1,14 +1,19 @@
 class Document {
   final String id;
   final String fileName;
-  final String fileType;
-  final DateTime uploadedAt;
+  final String mimeType;
+  final int size;
+  final DateTime createdAt;
+
+  /// Summary text in markdown format from the backend AI agent
   final String? summary;
+
   Document({
     required this.id,
     required this.fileName,
-    required this.fileType,
-    required this.uploadedAt,
+    required this.mimeType,
+    required this.size,
+    required this.createdAt,
     this.summary,
   });
 }

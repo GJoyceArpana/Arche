@@ -1,23 +1,25 @@
 import '../../domain/repositories/chat_repository.dart';
-import '../datasources/chat_websocket_datasource.dart';
+import '../datasources/chat_remote_datasource.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
-  final ChatWebSocketDataSource webSocketDataSource;
+  final ChatRemoteDataSource remoteDataSource;
 
-  ChatRepositoryImpl({required this.webSocketDataSource});
-
-  @override
-  Stream<Map<String, dynamic>> connectToChat(String documentId) {
-    return webSocketDataSource.connect(documentId);
-  }
+  ChatRepositoryImpl({required this.remoteDataSource});
 
   @override
-  void sendMessage(String message) {
-    webSocketDataSource.sendMessage(message);
-  }
-
-  @override
-  void disconnect() {
-    webSocketDataSource.disconnect();
+  Future<String> sendFollowUpQuestion(
+    String fileId,
+    String userId,
+    String question,
+  ) async {
+    try {
+      return await remoteDataSource.sendFollowUpQuestion(
+        fileId,
+        userId,
+        question,
+      );
+    } catch (e) {
+      throw Exception('Failed to get follow-up answer: $e');
+    }
   }
 }

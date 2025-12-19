@@ -58,6 +58,7 @@ export async function uploadFile(req, res) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
         const userId = req.body.userId;
+        console.log(userId);
         const fileId = crypto.randomUUID();
 
         await prisma.fileUpload.create({

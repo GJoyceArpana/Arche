@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../data/datasources/document_remote_datasource.dart';
-import '../../data/datasources/chat_websocket_datasource.dart';
+import '../../data/datasources/chat_remote_datasource.dart';
 import '../../data/repositories/document_repository_impl.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../widgets/history_card.dart';
@@ -15,12 +15,12 @@ class SummarizerScreen extends StatelessWidget {
     const Color deepIndigo = Color(0xFF3F51B5); // Royal Blue / Deep Indigo
 
     // Initialize repositories
+    final httpClient = http.Client();
     final documentRepository = DocumentRepositoryImpl(
-      remoteDataSource: DocumentRemoteDataSourceImpl(client: http.Client()),
+      remoteDataSource: DocumentRemoteDataSourceImpl(client: httpClient),
     );
-
     final chatRepository = ChatRepositoryImpl(
-      webSocketDataSource: ChatWebSocketDataSourceImpl(),
+      remoteDataSource: ChatRemoteDataSourceImpl(client: httpClient),
     );
 
     return Scaffold(
