@@ -94,7 +94,7 @@ class CourseProgressCard extends StatelessWidget {
 
           // Button
           if (!isCompleted) _buildContinueButton(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
 
           // Footer/Progress
           _buildProgressBar(progress, completedSubTopics, totalSubTopics),
