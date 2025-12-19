@@ -78,11 +78,12 @@ class _UploadCardState extends State<UploadCard> {
           throw Exception('Failed to read file bytes');
         }
       } else {
-        // For mobile/desktop, use File
+        // For mobile/desktop, use file path as String
         if (_pickedFile!.path == null) {
           throw Exception('File path is null');
         }
-        fileData = File(_pickedFile!.path!);
+        fileData = _pickedFile!
+            .path!; // Changed from File(_pickedFile!.path!) to just the path string
       }
 
       final uploadResult = await widget.repository.uploadDocument(
