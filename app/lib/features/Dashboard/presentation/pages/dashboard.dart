@@ -57,6 +57,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  /// Check if all subtopics in a journey are completed
+  bool _isJourneyCompleted(LearningJourney journey) {
+    if (journey.subTopics.isEmpty) return false;
+    return journey.subTopics.every((subTopic) => subTopic.isCompleted);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_detailedJourneysFuture == null) {
@@ -65,7 +71,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       body: Container(
-        
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -73,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             colors: [Color(0xFF4338CA), Colors.white],
           ),
         ),
-        
+
         child: FutureBuilder<List<LearningJourney>>(
           future: _detailedJourneysFuture,
           builder: (context, snapshot) {
@@ -85,21 +90,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return Center(child: Text("Error: ${snapshot.error}"));
             }
 
-            final journeys = snapshot.data ?? [];
+            final allJourneys = snapshot.data ?? [];
 
-            if (journeys.isEmpty) {
-              return const Center(child: Text("No learning journeys found."));
+            // Filter out completed journeys
+            final activeJourneys = allJourneys
+                .where((journey) => !_isJourneyCompleted(journey))
+                .toList();
+
+            if (activeJourneys.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.celebration,
+                      size: 80,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "All courses completed! 🎉",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Great job on finishing all your learning journeys!",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
             }
-            
-            
+
             return SingleChildScrollView(
               child: Column(
                 children: [
                   const SizedBox(height: 20),
                   CarouselSlider.builder(
-                    itemCount: journeys.length,
+                    itemCount: activeJourneys.length,
                     itemBuilder: (context, index, realIndex) {
-                      final journey = journeys[index];
+                      final journey = activeJourneys[index];
                       return CourseCard(
                         journey: journey,
                         onContinue: (subTopic) async {
@@ -152,7 +190,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(journeys.length, (index) {
+                    children: List.generate(activeJourneys.length, (index) {
                       return Container(
                         width: 8.0,
                         height: 8.0,
