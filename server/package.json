@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "migrate": "npx prisma migrate deploy",
+    "migrate": "npx prisma migrate deploy && npx prisma generate",
     "build": "npm run migrate"
   },
   "dependencies": {
